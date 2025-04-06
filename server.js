@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-const http = require('http');
+const fs = require('fs');
+const https = require('https');
 const socketIo = require('socket.io');
 const jwt = require('jsonwebtoken');
 const { CLIENT_URL, MONGODB_URI } = require('./config');
@@ -11,9 +12,19 @@ const { CLIENT_URL, MONGODB_URI } = require('./config');
 // Load environment variables
 dotenv.config();
 
+// SSL Certificate paths
+const sslOptions = {
+  key: fs.readFileSync('/etc/letsencrypt/live/backend.zpsanglijataayu.in/privkey.pem', 'utf8'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/backend.zpsanglijataayu.in/fullchain.pem', 'utf8'),
+};
+
 // Create Express app
 const app = express();
-const server = http.createServer(app);
+
+// Create HTTPS server
+const server = https.createServer(sslOptions, app);
+
+// Initialize Socket.IO
 const io = socketIo(server, {
   cors: {
     origin: CLIENT_URL,
@@ -92,7 +103,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 5000;
+// Start HTTPS server
+const PORT = process.env.PORT || 443;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-}); 
+  console.log(`🚀 HTTPS Server running on port ${PORT}`);
+});

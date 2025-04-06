@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const { MONGODB_URI } = require('../config');
 
 async function createAdminUser() {
   try {
     // Connect to MongoDB with correct database name
     console.log('Connecting to database...');
-    await mongoose.connect('mongodb://localhost:27017/nasha-mukti');
+    await mongoose.connect(MONGODB_URI);
     console.log('Connected to database successfully');
     
     // Delete any existing admin users

@@ -25,29 +25,24 @@ const app = express();
 
 // Create HTTPS server
 const server = https.createServer(sslOptions, app);
-
-// Middleware
-app.use(cors({
+// Define allowed origin
+const corsOptions = {
   origin: (origin, callback) => {
+    console.log("Request Origin:", origin); // DEBUG
     if (!origin || origin === CLIENT_URL) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('CORS error: Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
-}));
+};
 
-// Handle OPTIONS preflight requests manually (if needed)
-app.options('*', cors({
-  origin: CLIENT_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
-}));
-
+// Apply CORS middleware once
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight globally
 
 // Initialize Socket.IO
 const io = socketIo(server, {

@@ -12,6 +12,8 @@ const { CLIENT_URL, MONGODB_URI } = require('./config');
 // Load environment variables
 dotenv.config();
 
+
+
 // SSL Certificate paths
 const sslOptions = {
   key: fs.readFileSync('/etc/letsencrypt/live/backend.zpsanglijataayu.in/privkey.pem', 'utf8'),
@@ -23,6 +25,29 @@ const app = express();
 
 // Create HTTPS server
 const server = https.createServer(sslOptions, app);
+
+// Middleware
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === CLIENT_URL) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
+}));
+
+// Handle OPTIONS preflight requests manually (if needed)
+app.options('*', cors({
+  origin: CLIENT_URL,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Pragma']
+}));
+
 
 // Initialize Socket.IO
 const io = socketIo(server, {

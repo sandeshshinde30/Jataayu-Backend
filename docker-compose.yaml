@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: jataayu
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: jataayu
+    volumes:
+      - ./mongo-data:/data/db
+
+  backend:
+    image: sandeshdocker30/jattayu-backend:1.0
+    container_name: jataayu-backend
+    restart: always
+    ports:
+      - "443:443"  # Assuming your backend server is running on port 443 inside the container
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URI: mongodb://admin:password@jataayu:27017/jataayu?authSource=admin

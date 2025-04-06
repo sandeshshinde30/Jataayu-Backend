@@ -13,7 +13,6 @@ const { CLIENT_URL, MONGODB_URI } = require('./config');
 dotenv.config();
 
 
-
 // SSL Certificate paths
 const sslOptions = {
   key: fs.readFileSync('/etc/letsencrypt/live/backend.zpsanglijataayu.in/privkey.pem', 'utf8'),

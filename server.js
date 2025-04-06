@@ -104,7 +104,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start HTTPS server
-const PORT = process.env.PORT || 443;
+const PORT = 443;
 server.listen(PORT, () => {
   console.log(`🚀 HTTPS Server running on port ${PORT}`);
 });
